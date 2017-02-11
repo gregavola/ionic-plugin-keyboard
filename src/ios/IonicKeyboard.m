@@ -40,6 +40,19 @@
                                    //deprecated
                                    [weakSelf.commandDelegate evalJs:[NSString stringWithFormat:@"cordova.fireWindowEvent('native.showkeyboard', { 'keyboardHeight': %@ }); ", [@(keyboardFrame.size.height) stringValue]]];
                                }];
+   
+    _keyboardChangeObserver = [nc addObserverForName:UIKeyboardDidChangeFrameNotification
+                               object:nil
+                               queue:[NSOperationQueue mainQueue]
+                               usingBlock:^(NSNotification* notification) {
+                                   CGRect keyboardFrame = [notification.userInfo[UIKeyboardFrameEndUserInfoKey] CGRectValue];
+                                   keyboardFrame = [self.viewController.view convertRect:keyboardFrame fromView:nil];
+
+                                   [weakSelf.commandDelegate evalJs:[NSString stringWithFormat:@"cordova.fireWindowEvent('native.keyboardchange', { 'keyboardHeight': %@ }); ", [@(keyboardFrame.size.height) stringValue]]];
+
+                                   //deprecated
+                                   [weakSelf.commandDelegate evalJs:[NSString stringWithFormat:@"cordova.fireWindowEvent('native.changekeyboard', { 'keyboardHeight': %@ }); ", [@(keyboardFrame.size.height) stringValue]]];
+                               }];
 
     _keyboardHideObserver = [nc addObserverForName:UIKeyboardWillHideNotification
                                object:nil
